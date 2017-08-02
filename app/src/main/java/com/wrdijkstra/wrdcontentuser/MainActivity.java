@@ -1,6 +1,6 @@
-package com.wrdijkstra.wrdcontentuser;
+package com.wrdijkstra.wrdcontentuser2;
 
-import com.wrdijkstra.wrdcontentuser.WrdContentContract;
+import com.wrdijkstra.wrdcontentuser2.WrdContentContract;
 
 
 import android.content.ContentResolver;

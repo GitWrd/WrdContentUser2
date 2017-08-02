@@ -1,4 +1,4 @@
-package com.wrdijkstra.wrdcontentuser;
+package com.wrdijkstra.wrdcontentuser2;
 
 import android.content.ContentResolver;
 import android.net.Uri;

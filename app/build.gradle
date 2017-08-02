@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "com.wrdijkstra.wrdcontentuser"
+        applicationId "com.wrdijkstra.wrdcontentuser2"
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1

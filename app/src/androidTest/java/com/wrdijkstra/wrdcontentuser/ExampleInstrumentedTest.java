@@ -1,4 +1,4 @@
-package com.wrdijkstra.wrdcontentuser;
+package com.wrdijkstra.wrdcontentuser2;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.wrdijkstra.wrdcontentuser", appContext.getPackageName());
+        assertEquals("com.wrdijkstra.wrdcontentuser2", appContext.getPackageName());
     }
 }
