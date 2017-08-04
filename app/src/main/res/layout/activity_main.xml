@@ -16,6 +16,89 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/btUpdate" />
+
+    <EditText
+        android:id="@+id/etId"
+        android:layout_width="210dp"
+        android:layout_height="46dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Id"
+        android:inputType="numberDecimal"
+        android:digits="0123456789"
+        android:selectAllOnFocus="false"
+        app:layout_constraintLeft_toRightOf="@+id/etIdTag"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etIdTag"
+        android:layout_width="70dp"
+        android:layout_height="46dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:ems="10"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="false"
+        android:text="ID"
+        android:textIsSelectable="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etLabelTag"
+        android:layout_width="70dp"
+        android:layout_height="46dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="-1dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:ems="10"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="false"
+        android:text="Label"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="@+id/etIdTag"
+        app:layout_constraintRight_toRightOf="@+id/etIdTag"
+        app:layout_constraintTop_toBottomOf="@+id/etIdTag" />
+
+    <EditText
+        android:id="@+id/etLabel"
+        android:layout_width="210dp"
+        android:layout_height="46dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="Label"
+        android:inputType="textPersonName"
+        app:layout_constraintLeft_toRightOf="@+id/etLabelTag"
+        app:layout_constraintTop_toBottomOf="@+id/etId" />
+
+    <Button
+        android:id="@+id/btUpdate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="updateDatabase"
+        android:text="Update"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etLabel" />
 
 </android.support.constraint.ConstraintLayout>

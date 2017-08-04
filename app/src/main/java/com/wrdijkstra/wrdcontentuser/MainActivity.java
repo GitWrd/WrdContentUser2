@@ -3,6 +3,7 @@ package com.wrdijkstra.wrdcontentuser2;
 import com.wrdijkstra.wrdcontentuser2.WrdContentContract;
 
 
+import android.app.IntentService;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -11,7 +12,9 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ public class MainActivity extends ListActivity {
 
         Cursor cursor = resolver.query(WrdContentContract.Counters.CONTENT_URI, null, null, null, WrdContentContract.Counters.SORT_ORDER_DEFAULT);
         if (cursor.moveToFirst()) {
+            results.clear();
             do {
                 int id = cursor.getInt(cursor.getColumnIndex(WrdContentContract.Counters._ID));
                 String label = cursor.getString(cursor.getColumnIndex(WrdContentContract.Counters.LABEL));
@@ -51,6 +55,32 @@ public class MainActivity extends ListActivity {
             } while (cursor.moveToNext());
         }
         cursor.close();
+    }
+
+    public void updateDatabase(View v) {
+        ContentResolver resolver = getContentResolver();
+
+        EditText etId = (EditText)findViewById(R.id.etId);
+        EditText etLabel = (EditText)findViewById(R.id.etLabel);
+        int id = Integer.parseInt(etId.getText().toString());
+        String label = etLabel.getText().toString();
+        ContentValues updateEntry = new ContentValues();
+
+        updateEntry.put(WrdContentContract.Counters._ID,id);
+        updateEntry.put(WrdContentContract.Counters.LABEL,label);
+        Cursor cursor = resolver.query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)}, null);
+        if (cursor.moveToFirst()) {
+            resolver.update(WrdContentContract.Counters.CONTENT_URI, updateEntry, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)});
+        }
+        else {
+            resolver.insert(WrdContentContract.Counters.CONTENT_URI, updateEntry);
+        }
+
+        etId.setText("");
+        etLabel.setText("");
+
+        openAndQueryDatabase();
+        displayResultList();
     }
 }
 
