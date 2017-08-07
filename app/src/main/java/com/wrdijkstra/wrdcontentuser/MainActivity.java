@@ -1,27 +1,33 @@
 package com.wrdijkstra.wrdcontentuser2;
 
-import com.wrdijkstra.wrdcontentuser2.WrdContentContract;
-
-
-import android.app.IntentService;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends ListActivity {
 
-    private ArrayList<String> results = new ArrayList<String>();
+    private ArrayList<String> results = new ArrayList<>();
+    private ContentObserver contentObserver = new ContentObserver(null) {
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+
+            getListView().post(new Runnable() {
+                public void run() {
+                    openAndQueryDatabase();
+                    displayResultList();
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,8 @@ public class MainActivity extends ListActivity {
                 results.add("[" + Integer.toString(id) + "] "+ label + ", " + locked + ", " + Integer.toString(count));
             } while (cursor.moveToNext());
         }
+
+        resolver.registerContentObserver(WrdContentContract.Counters.CONTENT_URI,false,contentObserver);
         cursor.close();
     }
 
@@ -78,9 +86,6 @@ public class MainActivity extends ListActivity {
 
         etId.setText("");
         etLabel.setText("");
-
-        openAndQueryDatabase();
-        displayResultList();
     }
 }
 
