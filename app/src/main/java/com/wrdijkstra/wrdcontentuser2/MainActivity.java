@@ -7,13 +7,18 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends ListActivity {
 
+    private ListView lvDbContent;
     private ArrayList<String> results = new ArrayList<>();
     private ContentObserver contentObserver = new ContentObserver(null) {
         @Override
@@ -34,6 +39,28 @@ public class MainActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        lvDbContent = (ListView)findViewById(android.R.id.list);
+        lvDbContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                                               public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+
+                                                   String item = (String)adapter.getItemAtPosition(position);
+                                                   Matcher matcher = Pattern.compile("\\d+").matcher(item);
+                                                   matcher.find();
+                                                   int entryId = Integer.valueOf(matcher.group());
+
+                                                   ContentResolver resolver = getContentResolver();
+                                                   Cursor cursor = resolver.query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(entryId)}, null);
+                                                   if (cursor.moveToFirst()) {
+                                                       String entryLabel = cursor.getString(cursor.getColumnIndex(WrdContentContract.Counters.LABEL));
+                                                       EditText etId = (EditText)findViewById(R.id.etId);
+                                                       EditText etLabel = (EditText)findViewById(R.id.etLabel);
+
+                                                       etId.setText(String.valueOf(entryId));
+                                                       etLabel.setText(entryLabel);
+                                                   }
+                                               }
+                                           });
         openAndQueryDatabase();
         displayResultList();
     }
