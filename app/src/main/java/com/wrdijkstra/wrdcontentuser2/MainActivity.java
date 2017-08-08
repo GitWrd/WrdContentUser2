@@ -6,9 +6,12 @@ import android.content.ContentValues;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -18,6 +21,10 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends ListActivity {
 
+    private boolean updateLabel = false;
+    private EditText etId;
+    private EditText etLabel;
+    private Button   btUpdate;
     private ListView lvDbContent;
     private ArrayList<String> results = new ArrayList<>();
     private ContentObserver contentObserver = new ContentObserver(null) {
@@ -49,10 +56,8 @@ public class MainActivity extends ListActivity {
                                                    matcher.find();
                                                    int entryId = Integer.valueOf(matcher.group());
 
-                                                   ContentResolver resolver = getContentResolver();
-                                                   Cursor cursor = resolver.query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(entryId)}, null);
-                                                   if (cursor.moveToFirst()) {
-                                                       String entryLabel = cursor.getString(cursor.getColumnIndex(WrdContentContract.Counters.LABEL));
+                                                   if (isIdValid(entryId)==true) {
+                                                       String entryLabel = getLabel(entryId);
                                                        EditText etId = (EditText)findViewById(R.id.etId);
                                                        EditText etLabel = (EditText)findViewById(R.id.etLabel);
 
@@ -61,6 +66,52 @@ public class MainActivity extends ListActivity {
                                                    }
                                                }
                                            });
+
+        etId = (EditText)findViewById(R.id.etId);
+        etLabel = (EditText)findViewById(R.id.etLabel);
+        btUpdate = (Button)findViewById(R.id.btUpdate);
+        etId.addTextChangedListener(new TextWatcher() {
+                                        @Override
+                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                        }
+
+                                        @Override
+                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                            if (s.toString().trim().length()==0) {
+                                                btUpdate.setEnabled(false);
+
+                                                if (updateLabel == true) {
+                                                    etLabel.setText("");
+                                                }
+                                            }
+                                            else {
+                                                btUpdate.setEnabled(true);
+
+                                                if ((etLabel.getText().toString().trim().length() == 0) || (updateLabel == true)) {
+                                                    int id = Integer.parseInt(etId.getText().toString());
+                                                    updateLabel = true;
+                                                    if (isIdValid(id) == true) {
+                                                        etLabel.setText(getLabel(id));
+                                                    }
+                                                    else {
+                                                        etLabel.setText("");
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void afterTextChanged(Editable s) {
+                                        }
+                                    });
+
+        etId.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                            @Override
+                                            public void onFocusChange(View v, boolean hasFocus) {
+                                                updateLabel = false;
+                                            }
+                                        });
+
         openAndQueryDatabase();
         displayResultList();
     }
@@ -93,8 +144,6 @@ public class MainActivity extends ListActivity {
     }
 
     public void updateDatabase(View v) {
-        ContentResolver resolver = getContentResolver();
-
         EditText etId = (EditText)findViewById(R.id.etId);
         EditText etLabel = (EditText)findViewById(R.id.etLabel);
         int id = Integer.parseInt(etId.getText().toString());
@@ -103,16 +152,35 @@ public class MainActivity extends ListActivity {
 
         updateEntry.put(WrdContentContract.Counters._ID,id);
         updateEntry.put(WrdContentContract.Counters.LABEL,label);
-        Cursor cursor = resolver.query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)}, null);
-        if (cursor.moveToFirst()) {
-            resolver.update(WrdContentContract.Counters.CONTENT_URI, updateEntry, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)});
+        if (isIdValid(id)==true) {
+            getContentResolver().update(WrdContentContract.Counters.CONTENT_URI, updateEntry, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)});
         }
         else {
-            resolver.insert(WrdContentContract.Counters.CONTENT_URI, updateEntry);
+            getContentResolver().insert(WrdContentContract.Counters.CONTENT_URI, updateEntry);
         }
 
         etId.setText("");
         etLabel.setText("");
+    }
+
+    private boolean isIdValid ( int id ) {
+        Cursor cursor = getContentResolver().query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)}, null);
+        if (cursor.moveToFirst()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private String getLabel ( int id ) {
+        Cursor cursor = getContentResolver().query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)}, null);
+        if (cursor.moveToFirst()) {
+            return cursor.getString(cursor.getColumnIndex(WrdContentContract.Counters.LABEL));
+        }
+        else {
+            return null;
+        }
     }
 }
 
