@@ -28,18 +28,19 @@ public class MainActivity extends ListActivity {
     private ListView lvDbContent;
     private ArrayList<String> results = new ArrayList<>();
     private ContentObserver contentObserver = new ContentObserver(null) {
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
+                                                    @Override
+                                                    public void onChange(boolean selfChange) {
+                                                        super.onChange(selfChange);
 
-            getListView().post(new Runnable() {
-                public void run() {
-                    openAndQueryDatabase();
-                    displayResultList();
-                }
-            });
-        }
-    };
+                                                        getListView().post(new Runnable() {
+                                                            public void run() {
+                                                                openAndQueryDatabase();
+                                                                displayResultList();
+                                                                updateLabelText();
+                                                            }
+                                                        });
+                                                    }
+                                                };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,17 +87,7 @@ public class MainActivity extends ListActivity {
                                             }
                                             else {
                                                 btUpdate.setEnabled(true);
-
-                                                if ((etLabel.getText().toString().trim().length() == 0) || (updateLabel == true)) {
-                                                    int id = Integer.parseInt(etId.getText().toString());
-                                                    updateLabel = true;
-                                                    if (isIdValid(id) == true) {
-                                                        etLabel.setText(getLabel(id));
-                                                    }
-                                                    else {
-                                                        etLabel.setText("");
-                                                    }
-                                                }
+                                                updateLabelText();
                                             }
                                         }
 
@@ -162,6 +153,19 @@ public class MainActivity extends ListActivity {
         etId.setText("");
         etLabel.setText("");
     }
+
+    private void updateLabelText() {
+        if ((etLabel.getText().toString().trim().length() == 0) || (updateLabel == true)) {
+        int id = Integer.parseInt(etId.getText().toString());
+        updateLabel = true;
+        if (isIdValid(id) == true) {
+            etLabel.setText(getLabel(id));
+        }
+        else {
+            etLabel.setText("");
+        }
+    }
+}
 
     private boolean isIdValid ( int id ) {
         Cursor cursor = getContentResolver().query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)}, null);
