@@ -29,7 +29,7 @@ public class MainActivity extends ListActivity {
     private ArrayList<String> results = new ArrayList<>();
     private ContentObserver contentObserver = new ContentObserver(null) {
                                                     @Override
-                                                    public void onChange(boolean selfChange) {
+                                                    public void onChange(final boolean selfChange) {
                                                         super.onChange(selfChange);
 
                                                         getListView().post(new Runnable() {
@@ -78,6 +78,7 @@ public class MainActivity extends ListActivity {
 
                                         @Override
                                         public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                            btUpdate.setEnabled(s.toString().trim().length()!=0);
                                             if (s.toString().trim().length()==0) {
                                                 btUpdate.setEnabled(false);
 
@@ -155,17 +156,29 @@ public class MainActivity extends ListActivity {
     }
 
     private void updateLabelText() {
-        if ((etLabel.getText().toString().trim().length() == 0) || (updateLabel == true)) {
-        int id = Integer.parseInt(etId.getText().toString());
-        updateLabel = true;
-        if (isIdValid(id) == true) {
-            etLabel.setText(getLabel(id));
+        // Update label field, depending on ID field
+        if (etId.getText().toString().trim().length()==0) {
+            // ID field empty ->  clear label field if pre-filled before
+            if (updateLabel == true) {
+                etLabel.setText("");
+            }
         }
         else {
-            etLabel.setText("");
+            // Update label field only if empty, or if pre-filled before
+            if ((etLabel.getText().toString().trim().length() == 0) || (updateLabel == true)) {
+                int id = Integer.parseInt(etId.getText().toString());
+                updateLabel = true;
+                if (isIdValid(id) == true) {
+                    // Valid ID -> display corresponding Label
+                    etLabel.setText(getLabel(id));
+                }
+                else {
+                    // Invalid ID -> clear pre-filled Label field
+                    etLabel.setText("");
+                }
+            }
         }
     }
-}
 
     private boolean isIdValid ( int id ) {
         Cursor cursor = getContentResolver().query(WrdContentContract.Counters.CONTENT_URI, null, WrdContentContract.Counters._ID + " = ?", new String[]{String.valueOf(id)}, null);
